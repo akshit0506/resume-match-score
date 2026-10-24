@@ -34,7 +34,7 @@ Greenhouse distinguishes exact keyword filtering from optional employer-calibrat
 - [Workday Skills Match](https://doc.workday.com/admin-guide/en-us/human-capital-management/recruiting/candidates/candidate-skills-match/ave1604091571278.html)
 - [Workday Fit & Gap](https://doc.workday.com/hiredscore/en-us/workday-hiredscore/recruiter-productivity-/concept--fit---gap.html)
 
-## Implemented scoring rules
+## How scoring works
 
 AI extracts atomic requirements and supporting quotes instead of authoring category scores. Code verifies job quotes and resume quotes against the supplied text (PDFs use AI-transcribed text, not independently verified OCR). Unsupported positive evidence becomes unclear. Duplicate criteria earn no additional credit.
 
@@ -48,7 +48,7 @@ Gap answers are user-authored facts explicitly added to the editable draft befor
 
 ## Validation and remaining limits
 
-Automated tests verify quote checks, weights, partial credit, duplication resistance, term boundaries and unsupported numerical edits. A synthetic real scan and answer→draft→re-score flow is also exercised.
+Automated tests cover quote checks, weights, partial credit, duplication resistance, term boundaries and unsupported numerical edits. Run the suite with `bun run test` from the repository root.
 
 No matched competitor benchmark or independently annotated held-out evaluation was performed. Therefore GetSeen cannot claim best-in-market accuracy. PDF transcription, nonnumeric recommendation fidelity, date arithmetic, alias interpretation, negation and criterion consistency remain AI-dependent. Unknown evidence and original file layout require human review.
 
