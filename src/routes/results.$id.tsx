@@ -17,7 +17,7 @@ export const Route = createFileRoute("/results/$id")({
   },
   head: ({ loaderData }) => {
     const r = loaderData?.report;
-    const title = r ? `ATS score ${r.score}${r.job_title ? ` — ${r.job_title}` : ""} | Shortlist` : "ATS report | Shortlist";
+    const title = r ? `ATS score ${r.score}${r.job_title ? ` — ${r.job_title}` : ""} | GetSeen` : "ATS report | GetSeen";
     const desc = r ? `${VERDICT_LABELS[r.verdict]}. ${r.summary.slice(0, 140)}` : "ATS resume score report.";
     return {
       meta: [

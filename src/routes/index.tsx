@@ -14,12 +14,12 @@ import { saveEditor } from "@/lib/editor-session";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Shortlist — Check your resume's ATS score for any job" },
+      { title: "GetSeen — Check your resume's ATS score for any job" },
       {
         name: "description",
         content: "Upload your resume and a job description to get an ATS match score, missing keywords, and precise edits.",
       },
-      { property: "og:title", content: "Shortlist — ATS Resume Score Checker" },
+      { property: "og:title", content: "GetSeen — ATS Resume Score Checker" },
       {
         property: "og:description",
         content: "Get an ATS match score and targeted fixes for your resume against any job description.",

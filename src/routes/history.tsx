@@ -12,9 +12,9 @@ export const Route = createFileRoute("/history")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "My scans | Shortlist" },
+      { title: "My scans | GetSeen" },
       { name: "description", content: "Your saved ATS resume scans." },
-      { property: "og:title", content: "My scans | Shortlist" },
+      { property: "og:title", content: "My scans | GetSeen" },
       { property: "og:description", content: "Your saved ATS resume score reports." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

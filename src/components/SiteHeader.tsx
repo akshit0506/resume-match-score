@@ -10,7 +10,7 @@ export function SiteHeader() {
     <header className="border-b border-border">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-baseline gap-2">
-          <span className="font-serif text-2xl font-semibold">Shortlist</span>
+          <span className="font-serif text-2xl font-semibold">GetSeen</span>
           <span className="hidden text-xs uppercase tracking-[0.2em] text-muted-foreground sm:inline">
             ATS score check
           </span>
