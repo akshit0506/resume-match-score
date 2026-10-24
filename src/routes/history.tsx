@@ -52,7 +52,7 @@ function History() {
 
   const remove = async (id: string) => {
     const { error } = await supabase.from("scans").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["scans"] });
   };
 

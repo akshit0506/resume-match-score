@@ -119,7 +119,7 @@ function localFormattingChecks(doc: DocInput): string[] {
   if (!/(\+?\d[\d\s().-]{7,}\d)/.test(t)) issues.push("No phone number detected.");
   for (const h of ["experience", "education", "skills"]) {
     if (!new RegExp(`(^|\\n)\\s*[^\\n]{0,20}${h}`, "i").test(t))
-      issues.push(`No clear "${h[0].toUpperCase() + h.slice(1)}" section heading found.`);
+      issues.push(`No clear "${h.charAt(0).toUpperCase() + h.slice(1)}" section heading found.`);
   }
   return issues;
 }
@@ -271,7 +271,7 @@ export const fetchJobFromUrl = createServerFn({ method: "POST" })
     const ld = [...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)];
     for (const m of ld) {
       try {
-        const parsed = JSON.parse(m[1]);
+        const parsed = JSON.parse(m[1] ?? "");
         const items = Array.isArray(parsed) ? parsed : parsed["@graph"] ?? [parsed];
         const job = items.find((i: { "@type"?: string }) => i?.["@type"] === "JobPosting");
         if (job?.description) {

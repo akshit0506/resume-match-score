@@ -122,8 +122,8 @@ function Index() {
     jdTab === "upload" ? jdFile : jdText.trim().length >= 40 ? { kind: "text", name: "job", text: jdText } : null;
 
   const run = async () => {
-    if (!resume) return toast.error("Please upload your resume.");
-    if (!job) return toast.error("Please add the job description.");
+    if (!resume) { toast.error("Please upload your resume."); return; }
+    if (!job) { toast.error("Please add the job description."); return; }
     setRunning(true);
     setStep(0);
     const t = setInterval(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 9000);
