@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyzeResume, fetchJobFromUrl } from "@/lib/ats.functions";
 import { parseFile, type ParsedDoc } from "@/lib/parse-file";
+import { saveEditor } from "@/lib/editor-session";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -128,7 +129,8 @@ function Index() {
     setStep(0);
     const t = setInterval(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)), 9000);
     try {
-      const { id } = await analyze({ data: { resume, job } });
+      const { id, documents } = await analyze({ data: { resume, job } });
+      saveEditor(id, documents);
       navigate({ to: "/results/$id", params: { id } });
     } catch (e) {
       toast.error((e as Error).message || "Something went wrong.");
@@ -148,9 +150,8 @@ function Index() {
           Will your resume make the shortlist?
         </h1>
         <p className="mt-5 text-lg text-muted-foreground">
-          We score your resume the way applicant tracking systems and recruiters screen it — keywords,
-          title match, must-haves and parseability — then show exactly what to reword, without changing
-          your story.
+          Check your resume against the role’s actual requirements, with evidence for every match
+          and faithful edits that keep your experience intact.
         </p>
       </section>
 
