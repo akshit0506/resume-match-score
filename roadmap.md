@@ -7,9 +7,9 @@
 - [x] Verify real scans, revision flow, questions and layouts.
 
 ## Requested delighters
-- [ ] Integrate existing re-scoring and gap questions with the new tools using the current draft.
-- [ ] Add an evidence-based recruiter six-second view.
-- [ ] Add faithful, editable cover letter and LinkedIn summary drafts with copy/download.
-- [ ] Add role-specific interview questions, evidence-backed talking points and practice notes.
-- [ ] Test factual safeguards and verify all new tools with real AI output and both screen sizes.
+- [x] Integrate existing re-scoring and gap questions with the new tools using the current draft.
+- [x] Add an evidence-based recruiter six-second view.
+- [x] Add faithful, editable cover letter and LinkedIn summary drafts with copy/download.
+- [x] Add role-specific interview questions, evidence-backed talking points and practice notes.
+- [x] Test factual safeguards and verify all new tools with real AI output and both screen sizes.
 - [ ] Help connect GetSeen code to GitHub under @akshit0506 (user must authorize Git sync in Project settings → Git).
