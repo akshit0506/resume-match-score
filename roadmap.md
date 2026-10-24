@@ -1,4 +1,5 @@
 # Scoring and improvement loop
+- [ ] Prepare public documentation: replace prompt transcripts with usage and contributor guidance.
 - [x] Rename the brand to GetSeen across the app and page titles.
 - [x] Research published competitor methods and document limits.
 - [x] Add evidence-based scoring formulas and recommendation safeguards with tests; extraction remains AI-assisted.
