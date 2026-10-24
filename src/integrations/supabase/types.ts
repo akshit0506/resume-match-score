@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      scans: {
+        Row: {
+          company: string | null
+          created_at: string
+          id: string
+          job_title: string | null
+          report: Json
+          resume_name: string | null
+          score: number
+          user_id: string | null
+          verdict: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          id?: string
+          job_title?: string | null
+          report: Json
+          resume_name?: string | null
+          score: number
+          user_id?: string | null
+          verdict: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          id?: string
+          job_title?: string | null
+          report?: Json
+          resume_name?: string | null
+          score?: number
+          user_id?: string | null
+          verdict?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
