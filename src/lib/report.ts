@@ -1,4 +1,5 @@
 import type { CategoryKey, Verdict } from "./scoring";
+import type { EvidenceCriterion } from "./evidence";
 
 export type Keyword = {
   term: string;
@@ -13,6 +14,7 @@ export type Suggestion = {
   suggested: string;
   reason: string;
   keyword: string | null;
+  evidence_quote?: string;
 };
 
 export type AtsReport = {
@@ -27,4 +29,7 @@ export type AtsReport = {
   formatting_issues: string[];
   strengths: string[];
   suggestions: Suggestion[];
+  methodology_version?: string;
+  criteria?: EvidenceCriterion[];
+  extraction_note?: string;
 };

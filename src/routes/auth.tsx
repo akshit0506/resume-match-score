@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in | Shortlist" },
+      { title: "Sign in | GetSeen" },
       { name: "description", content: "Sign in to save your ATS resume scans." },
-      { property: "og:title", content: "Sign in | Shortlist" },
+      { property: "og:title", content: "Sign in | GetSeen" },
       { property: "og:description", content: "Sign in to keep a history of your ATS resume scans." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

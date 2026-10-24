@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Shortlist — ATS Resume Score Checker" },
+      { title: "GetSeen — ATS Resume Score Checker" },
       { name: "description", content: "See how your resume scores against a job description in an ATS, and exactly what to fix." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
