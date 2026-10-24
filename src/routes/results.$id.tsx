@@ -8,6 +8,7 @@ import { CATEGORY_LABELS, CATEGORY_WEIGHTS, VERDICT_LABELS, type CategoryKey } f
 import type { AtsReport } from "@/lib/report";
 import { cn } from "@/lib/utils";
 import { ResumeWorkshop } from "@/components/ResumeWorkshop";
+import { RecruiterView } from "@/components/RecruiterView";
 
 export const Route = createFileRoute("/results/$id")({
   loader: async ({ params }) => {
@@ -158,7 +159,7 @@ function Results() {
             <Link to="/results/$id" params={{ id: previous.id }} className="text-xs text-muted-foreground underline">Previous report</Link>
             <p className="mt-1 text-xs text-muted-foreground">Same job, new evidence assessment. AI interpretation can vary between scans.</p>
           </div>}
-          <div className="mt-5 flex gap-2">
+          <div className="mt-5 flex flex-wrap gap-2">
             <Button asChild>
               <Link to="/">Scan again</Link>
             </Button>
@@ -171,6 +172,7 @@ function Results() {
             >
               Copy link
             </Button>
+            <RecruiterView report={r} />
           </div>
         </div>
       </section>

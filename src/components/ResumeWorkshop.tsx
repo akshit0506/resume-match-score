@@ -10,6 +10,7 @@ import { analyzeResume } from "@/lib/ats.functions";
 import { readEditor, saveEditor, type EditorDocuments } from "@/lib/editor-session";
 import { liveKeywordCoverage } from "@/lib/evidence";
 import type { AtsReport } from "@/lib/report";
+import { ApplicationKit } from "./ApplicationKit";
 
 export function ResumeWorkshop({ id, report }: { id: string; report: AtsReport }) {
   const [source, setSource] = useState<EditorDocuments | null>(null);
@@ -104,6 +105,7 @@ export function ResumeWorkshop({ id, report }: { id: string; report: AtsReport }
           </div>
         </div>
       </Tabs>
+      <ApplicationKit key={id} id={id} source={source} resume={text} pending={busy} />
     </section>
   );
 }

@@ -16,3 +16,5 @@
 - Job links are fetched directly server-side (JSON-LD JobPosting first, HTML fallback); Firecrawl was declined.
 - Resume and job source text are returned only to the submitting caller and retained in that tab's sessionStorage, never persisted in shareable report JSON, so report links cannot reveal full source documents.
 - Live editing displays exact keyword coverage only; full score updates require explicit server re-analysis, so provisional text matching is never presented as a validated ATS score.
+- Application kits are generated on explicit request from the current resume draft and original job text, validated for supporting quotes, and stored only in tab sessionStorage; shared reports never expose kit drafts or practice notes.
+- Recruiter highlights use existing verified report criteria without another AI call; the six-second timer is a review exercise, not a predicted recruiter decision.
