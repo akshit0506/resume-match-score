@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Check, Download, Loader2, RotateCcw } from "lucide-react";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyzeResume } from "@/lib/ats.functions";
 import { readEditor, saveEditor, type EditorDocuments } from "@/lib/editor-session";
-import { liveKeywordCoverage, countTerm } from "@/lib/evidence";
+import { liveKeywordCoverage } from "@/lib/evidence";
 import type { AtsReport } from "@/lib/report";
 
 export function ResumeWorkshop({ id, report }: { id: string; report: AtsReport }) {
@@ -17,7 +17,6 @@ export function ResumeWorkshop({ id, report }: { id: string; report: AtsReport }
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [added, setAdded] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
   const analyze = useServerFn(analyzeResume);
   const navigate = useNavigate();
   useEffect(() => {
@@ -105,7 +104,6 @@ export function ResumeWorkshop({ id, report }: { id: string; report: AtsReport }
           </div>
         </div>
       </Tabs>
-      <input ref={fileRef} type="file" hidden />
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AlertTriangle, Check, CheckCircle2, CircleHelp, Copy, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { getScan } from "@/lib/ats.functions";
 import { CATEGORY_LABELS, CATEGORY_WEIGHTS, VERDICT_LABELS, type CategoryKey } from "@/lib/scoring";
 import type { AtsReport } from "@/lib/report";
 import { cn } from "@/lib/utils";
+import { ResumeWorkshop } from "@/components/ResumeWorkshop";
 
 export const Route = createFileRoute("/results/$id")({
   loader: async ({ params }) => {
@@ -77,7 +78,7 @@ function Dial({ score }: { score: number }) {
 
 function Section({ title, children, sub }: { title: string; sub?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl bg-card p-6 shadow-card md:p-8">
+    <section className="border-t border-border py-6 md:py-8">
       <h2 className="text-2xl font-semibold">{title}</h2>
       {sub && <p className="mt-1 text-sm text-muted-foreground">{sub}</p>}
       <div className="mt-5">{children}</div>
@@ -126,17 +127,23 @@ function SuggestionCard({ s, i }: { s: AtsReport["suggestions"][number]; i: numb
 }
 
 function Results() {
-  const { report: r, resume_name } = Route.useLoaderData();
+  const { report: r, resume_name, id } = Route.useLoaderData();
+  const [previous, setPrevious] = useState<{ score: number; id: string } | null>(null);
+  useEffect(() => {
+    try {
+      const v = JSON.parse(sessionStorage.getItem(`shortlist-comparison:${id}`) ?? "null");
+      setPrevious(v && typeof v.score === "number" && typeof v.id === "string" ? v : null);
+    } catch { setPrevious(null); }
+  }, [id]);
   const cats = Object.keys(CATEGORY_WEIGHTS) as CategoryKey[];
   const missingKw = r.keywords.filter((k) => k.resume_mentions === 0);
-  const weakKw = r.keywords.filter((k) => k.resume_mentions === 1 && k.jd_mentions > 1);
   const sortedKw = [...r.keywords].sort(
     (a, b) => (a.importance === "required" ? 0 : 1) - (b.importance === "required" ? 0 : 1) || b.jd_mentions - a.jd_mentions,
   );
 
   return (
     <main className="mx-auto max-w-5xl space-y-6 px-6 py-10">
-      <section className="flex flex-col items-center gap-8 rounded-xl bg-card p-8 shadow-card md:flex-row md:p-10">
+      <section className="flex flex-col items-center gap-8 py-8 md:flex-row">
         <Dial score={r.score} />
         <div className="flex-1">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -145,6 +152,12 @@ function Results() {
           <h1 className={cn("mt-2 text-4xl font-semibold", tone(r.score))}>{VERDICT_LABELS[r.verdict]}</h1>
           <p className="mt-3 text-base leading-relaxed">{r.summary}</p>
           {resume_name && <p className="mt-3 text-xs text-muted-foreground">Resume: {resume_name}</p>}
+          <p className="mt-2 text-xs text-muted-foreground">{r.methodology_version === "evidence-v2" ? "Evidence-based requirement coverage · v2" : "Legacy assessment · re-scan for evidence-based scoring"}</p>
+          {previous && <div className="mt-4 border-l-2 border-accent pl-4" aria-live="polite">
+            <p className="text-sm font-semibold">Before {previous.score} → Now {r.score} <span className={tone(r.score)}>{r.score - previous.score >= 0 ? "+" : ""}{r.score - previous.score} points</span></p>
+            <Link to="/results/$id" params={{ id: previous.id }} className="text-xs text-muted-foreground underline">Previous report</Link>
+            <p className="mt-1 text-xs text-muted-foreground">Same job, new evidence assessment. AI interpretation can vary between scans.</p>
+          </div>}
           <div className="mt-5 flex gap-2">
             <Button asChild>
               <Link to="/">Scan again</Link>
@@ -165,10 +178,10 @@ function Results() {
       {r.knockouts.some((k) => k.status !== "met") && (
         <section className="rounded-xl border border-destructive/40 bg-destructive/5 p-6">
           <h2 className="flex items-center gap-2 text-xl font-semibold text-destructive">
-            <AlertTriangle className="size-5" /> Knock-out risks
+            <AlertTriangle className="size-5" /> Eligibility evidence to resolve
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Many ATS filters auto-reject when a must-have isn't visible — regardless of the overall score.
+            These job requirements are unmet or not demonstrated. Employer application questions may determine eligibility separately.
           </p>
           <ul className="mt-4 space-y-2">
             {r.knockouts
@@ -189,7 +202,9 @@ function Results() {
         </section>
       )}
 
-      <Section title="Score breakdown" sub="Weighted the way ATS ranking and recruiter screens prioritise.">
+      <ResumeWorkshop key={id} id={id} report={r} />
+
+      <Section title="Score breakdown" sub="Our published weights measure supported requirements, not an employer’s private ranking formula.">
         <div className="space-y-5">
           {cats.map((k) => {
             const c = r.categories[k];
@@ -212,9 +227,21 @@ function Results() {
         </div>
       </Section>
 
+      {r.criteria && <Section title="Evidence ledger" sub="Verified source quotes behind the assessment. Unclear means not demonstrated, not necessarily absent.">
+        <div className="divide-y divide-border">
+          {r.criteria.map((c, i) => <details key={i} className="py-3">
+            <summary className="cursor-pointer text-sm font-medium">{c.requirement} <span className="ml-2 text-xs capitalize text-muted-foreground">{c.status} · {c.importance}</span></summary>
+            <div className="mt-3 space-y-2 text-sm text-muted-foreground">
+              {c.job_quote && <p><strong>Job:</strong> “{c.job_quote}”</p>}
+              <p><strong>Resume:</strong> {c.resume_quote ? `“${c.resume_quote}”` : "No verified supporting quote"}</p><p>{c.note}</p>
+            </div>
+          </details>)}
+        </div>
+      </Section>}
+
       <Section
         title="Keywords"
-        sub={`${r.keywords.length - missingKw.length} of ${r.keywords.length} matched · ${missingKw.length} missing · ${weakKw.length} mentioned only once`}
+        sub={`${r.keywords.length - missingKw.length} of ${r.keywords.length} literal terms found · ${missingKw.length} not found. Repetition earns no extra evidence credit.`}
       >
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -236,9 +263,7 @@ function Results() {
                   <td className="py-2.5 pr-4 text-center">{k.resume_mentions}</td>
                   <td className="py-2.5">
                     {k.resume_mentions === 0 ? (
-                      <span className="text-destructive">Missing</span>
-                    ) : k.resume_mentions === 1 && k.jd_mentions > 1 ? (
-                      <span className="text-warning">Once</span>
+                      <span className="text-warning">Not found</span>
                     ) : (
                       <span className="text-success">Found</span>
                     )}
@@ -272,8 +297,9 @@ function Results() {
           </ul>
         </Section>
         <Section title="Formatting & parsing">
+          {r.extraction_note && <p className="mb-3 text-sm text-muted-foreground">{r.extraction_note}</p>}
           {r.formatting_issues.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No parsing risks found.</p>
+            <p className="text-sm text-muted-foreground">No additional observed text issues. This does not guarantee parsing in every ATS.</p>
           ) : (
             <ul className="space-y-2">
               {r.formatting_issues.map((s, i) => (
@@ -286,7 +312,7 @@ function Results() {
         </Section>
       </div>
       <p className="pb-6 text-center text-xs text-muted-foreground">
-        Scores estimate how ATS software and recruiters screen resumes; every company configures its system differently.
+        Requirement coverage is not a hiring probability or guaranteed ATS pass. Employer settings vary; evidence extraction uses AI and may need review.
       </p>
     </main>
   );

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod/v4";
-import { CATEGORY_WEIGHTS, VERDICT_LABELS } from "./scoring";
+import { VERDICT_LABELS } from "./scoring";
 import type { AtsReport } from "./report";
 import { scoreEvidence, safeSuggestions, countTerm } from "./evidence";
 
