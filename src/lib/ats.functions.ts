@@ -125,7 +125,7 @@ function localFormattingChecks(doc: DocInput): string[] {
 }
 
 export const analyzeResume = createServerFn({ method: "POST" })
-  .inputValidator((input: AnalyzeInput) => ({
+  .validator((input: AnalyzeInput) => ({
     resume: validateDoc(input?.resume, "resume"),
     job: validateDoc(input?.job, "job description"),
   }))
@@ -219,7 +219,7 @@ export const analyzeResume = createServerFn({ method: "POST" })
   });
 
 export const getScan = createServerFn({ method: "GET" })
-  .inputValidator((input: { id: string }) => {
+  .validator((input: { id: string }) => {
     if (!/^[0-9a-f-]{36}$/i.test(input?.id ?? "")) throw new Error("Invalid report link.");
     return input;
   })
@@ -240,7 +240,7 @@ export const getScan = createServerFn({ method: "GET" })
   });
 
 export const fetchJobFromUrl = createServerFn({ method: "POST" })
-  .inputValidator((input: { url: string }) => {
+  .validator((input: { url: string }) => {
     let u: URL;
     try {
       u = new URL(input?.url);
