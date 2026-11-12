@@ -30,11 +30,12 @@ function safeAiMessage(error: unknown): string {
 export const generateApplicationKit = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => applicationInputSchema.parse(input))
   .handler(async ({ data }) => {
-    const { streamText, Output } = await import("ai");
+    const { experimental_streamTextLowMemory: streamTextLowMemory, Output } = await import("ai");
+    const { readStructuredOutput } = await import("./ai-output.server");
     const { createGatewayProvider } = await import("./ai.server");
     const provider = createGatewayProvider();
     try {
-      const result = streamText({
+      const result = streamTextLowMemory({
         model: provider.responses("openai/gpt-6-astra"),
         instructions: INSTRUCTIONS,
         output: Output.object({ schema: applicationKitSchema }),
@@ -48,8 +49,8 @@ export const generateApplicationKit = createServerFn({ method: "POST" })
           store: false,
           include: ["reasoning.encrypted_content"],
         } },
-      } as Parameters<typeof streamText>[0]);
-      const raw = applicationKitSchema.parse(await result.output);
+      } as Parameters<typeof streamTextLowMemory>[0]);
+      const raw = await readStructuredOutput(result.fullStream, applicationKitSchema);
       const kit = validateApplicationKit(raw, data.resume, data.job);
       if (!kit.cover_letter.length || !kit.linkedin_summary.length || !kit.interview.length) {
         return { kit: null, error: "Not enough verified evidence was returned for a complete kit. Review the resume and job text before a new request." };

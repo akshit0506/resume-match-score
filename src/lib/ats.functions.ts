@@ -135,11 +135,12 @@ export const analyzeResume = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data }) => {
     const userId = await getOptionalUserId();
-    const { streamText, Output, NoObjectGeneratedError } = await import("ai");
+    const { experimental_streamTextLowMemory: streamTextLowMemory, Output, NoObjectGeneratedError } = await import("ai");
+    const { readStructuredOutput } = await import("./ai-output.server");
     const { createGatewayProvider } = await import("./ai.server");
     const provider = createGatewayProvider();
 
-    const result = streamText({
+    const result = streamTextLowMemory({
       model: provider.responses("openai/gpt-6-astra"),
       instructions: INSTRUCTIONS,
       output: Output.object({ schema: reportSchema }),
@@ -158,11 +159,11 @@ export const analyzeResume = createServerFn({ method: "POST" })
           include: ["reasoning.encrypted_content"],
         },
       },
-    } as Parameters<typeof streamText>[0]);
+    } as Parameters<typeof streamTextLowMemory>[0]);
 
     let raw: z.infer<typeof reportSchema>;
     try {
-      raw = (await result.output) as z.infer<typeof reportSchema>;
+      raw = await readStructuredOutput(result.fullStream, reportSchema);
     } catch (err) {
       if (NoObjectGeneratedError.isInstance(err)) {
         throw new Error("The analysis came back incomplete. Please try again.");
@@ -233,11 +234,15 @@ export const getScan = createServerFn({ method: "GET" })
   })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row } = await supabaseAdmin
+    const { data: row, error } = await supabaseAdmin
       .from("scans")
       .select("id, resume_name, created_at, report")
       .eq("id", data.id)
       .maybeSingle();
+    if (error) {
+      console.error("getScan failed", error);
+      throw new Error("Couldn't load the report. Please try again.");
+    }
     if (!row) return null;
     return {
       id: row.id as string,

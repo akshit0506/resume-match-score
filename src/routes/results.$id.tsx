@@ -1,7 +1,7 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter, type ErrorComponentProps } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Check, CheckCircle2, CircleHelp, Copy, XCircle } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, CircleHelp, Copy, XCircle, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getScan } from "@/lib/ats.functions";
 import { CATEGORY_LABELS, CATEGORY_WEIGHTS, VERDICT_LABELS, type CategoryKey } from "@/lib/scoring";
@@ -40,8 +40,29 @@ export const Route = createFileRoute("/results/$id")({
       </Button>
     </main>
   ),
+  pendingMs: 200,
+  pendingComponent: () => (
+    <main className="mx-auto flex max-w-xl items-center justify-center gap-3 px-6 py-24" role="status">
+      <Loader2 className="size-5 animate-spin" /> Loading your report…
+    </main>
+  ),
+  errorComponent: ResultsError,
   component: Results,
 });
+
+function ResultsError({ reset }: ErrorComponentProps) {
+  const router = useRouter();
+  return (
+    <main className="mx-auto max-w-xl px-6 py-24 text-center">
+      <h1 className="text-3xl font-semibold">Your report couldn’t load</h1>
+      <p className="mt-3 text-sm text-muted-foreground">Please try again. You don’t need to upload your documents again.</p>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <Button onClick={async () => { await router.invalidate(); reset(); }}><RotateCcw />Try again</Button>
+        <Button asChild variant="outline"><Link to="/">Back to scanner</Link></Button>
+      </div>
+    </main>
+  );
+}
 
 function tone(score: number) {
   return score >= 80 ? "text-success" : score >= 60 ? "text-warning" : "text-destructive";

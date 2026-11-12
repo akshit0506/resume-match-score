@@ -131,12 +131,12 @@ function Index() {
     try {
       const { id, documents } = await analyze({ data: { resume, job } });
       saveEditor(id, documents);
-      navigate({ to: "/results/$id", params: { id } });
+      await navigate({ to: "/results/$id", params: { id } });
     } catch (e) {
       toast.error((e as Error).message || "Something went wrong.");
-      setRunning(false);
     } finally {
       clearInterval(t);
+      setRunning(false);
     }
   };
 
