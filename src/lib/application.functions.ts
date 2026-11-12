@@ -30,15 +30,15 @@ function safeAiMessage(error: unknown): string {
 export const generateApplicationKit = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => applicationInputSchema.parse(input))
   .handler(async ({ data }) => {
-    const { experimental_streamTextLowMemory: streamTextLowMemory, Output } = await import("ai");
-    const { readStructuredOutput } = await import("./ai-output.server");
+    const { experimental_streamTextLowMemory: streamTextLowMemory } = await import("ai");
+    const { readStructuredOutput, finalOnlyObject } = await import("./ai-output.server");
     const { createGatewayProvider } = await import("./ai.server");
     const provider = createGatewayProvider();
     try {
       const result = streamTextLowMemory({
         model: provider.responses("openai/gpt-6-astra"),
         instructions: INSTRUCTIONS,
-        output: Output.object({ schema: applicationKitSchema }),
+        output: finalOnlyObject(applicationKitSchema),
         messages: [{ role: "user", content: `RESUME\n${data.resume}\n\nJOB DESCRIPTION\n${data.job}` }],
         abortSignal: getRequest().signal,
         maxRetries: 0,

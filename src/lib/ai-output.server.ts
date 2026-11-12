@@ -1,3 +1,16 @@
+import { Output, type FlexibleSchema } from "ai";
+
+// Preserve strict JSON on the wire without repairing/reparsing the growing
+// document on every token. These features only display the validated final JSON.
+export function finalOnlyObject<T>(schema: FlexibleSchema<T>) {
+  return {
+    ...Output.object({ schema }),
+    async parsePartialOutput(_options: { text: string }) {
+      return undefined;
+    },
+  };
+}
+
 // Keep one streamed result, not the SDK's replay queue of growing partial objects.
 export async function readStructuredOutput<T>(
   stream: AsyncIterable<{ type: string; text?: string; error?: unknown; finishReason?: string }>,

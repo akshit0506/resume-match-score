@@ -18,4 +18,4 @@
 - Live editing displays exact keyword coverage only; full score updates require explicit server re-analysis, so provisional text matching is never presented as a validated ATS score.
 - Application kits are generated on explicit request from the current resume draft and original job text, validated for supporting quotes, and stored only in tab sessionStorage; shared reports never expose kit drafts or practice notes.
 - Recruiter highlights use existing verified report criteria without another AI call; the six-second timer is a review exercise, not a predicted recruiter decision.
-- Final-only AI calls use the SDK's single-consumer low-memory stream and validate the completed JSON through ai-output.server.ts; replay queues retain growing partial objects and can exhaust the hosted runtime's memory.
+- Final-only AI calls use the SDK's single-consumer low-memory stream with finalOnlyObject and validate completed JSON through ai-output.server.ts; replay queues exhaust memory and per-token partial JSON repair exhausts CPU on long documents.

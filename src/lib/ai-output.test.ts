@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { readStructuredOutput } from "./ai-output.server";
+import { readStructuredOutput, finalOnlyObject } from "./ai-output.server";
 
 const schema = z.object({ summary: z.string() });
 async function* parts(values: Array<{ type: string; text?: string; error?: unknown; finishReason?: string }>) {
@@ -11,6 +11,20 @@ async function* parts(values: Array<{ type: string; text?: string; error?: unkno
 }
 
 describe("Final-only AI stream consumption", () => {
+  it("preserves the strict wire schema without parsing partial document JSON", async () => {
+    const output = finalOnlyObject(schema);
+    const format = await output.responseFormat;
+    expect(format?.type).toBe("json");
+    if (format?.type !== "json") throw new Error("Expected JSON format");
+    expect(format.schema).toMatchObject({
+      type: "object", required: ["summary"], additionalProperties: false,
+    });
+    // Incomplete and long fragments must never invoke JSON repair/validation.
+    for (const text of ['{"summary":', '{"summary":"' + "resume evidence ".repeat(5000)]) {
+      expect(await output.parsePartialOutput({ text })).toBeUndefined();
+    }
+  });
+
   it("reads split JSON with reasoning and metadata before text", async () => {
     const result = await readStructuredOutput(parts([
       { type: "start" }, { type: "reasoning-delta", text: "not report text" },

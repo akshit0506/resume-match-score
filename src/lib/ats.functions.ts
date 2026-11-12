@@ -135,15 +135,15 @@ export const analyzeResume = createServerFn({ method: "POST" })
   }))
   .handler(async ({ data }) => {
     const userId = await getOptionalUserId();
-    const { experimental_streamTextLowMemory: streamTextLowMemory, Output, NoObjectGeneratedError } = await import("ai");
-    const { readStructuredOutput } = await import("./ai-output.server");
+    const { experimental_streamTextLowMemory: streamTextLowMemory, NoObjectGeneratedError } = await import("ai");
+    const { readStructuredOutput, finalOnlyObject } = await import("./ai-output.server");
     const { createGatewayProvider } = await import("./ai.server");
     const provider = createGatewayProvider();
 
     const result = streamTextLowMemory({
       model: provider.responses("openai/gpt-6-astra"),
       instructions: INSTRUCTIONS,
-      output: Output.object({ schema: reportSchema }),
+      output: finalOnlyObject(reportSchema),
       messages: [
         {
           role: "user",
